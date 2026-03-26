@@ -1,7 +1,8 @@
+
 import { useEffect, useState, useContext } from "react";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
-import { DollarSign, Bell, GraduationCap, Wallet, User } from "lucide-react";
+import { DollarSign, Bell, GraduationCap, User, BookOpen, Calendar, Bus, Hotel } from "lucide-react";
 
 export default function ParentDashboard() {
   const { refreshUser } = useContext(AuthContext);
@@ -9,186 +10,139 @@ export default function ParentDashboard() {
   const [attendanceCount, setAttendanceCount] = useState(0);
   const [feesSummary, setFeesSummary] = useState({ totalPaid: 0, fees: [] });
   const [notices, setNotices] = useState([]);
+  const [exams, setExams] = useState([]);
+  const [books, setBooks] = useState([]);
+  const [transport, setTransport] = useState(null);
+  const [hostel, setHostel] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!refreshUser) return;
     const load = async () => {
-      const me = await refreshUser(api);
-      if (!me) return;
-      const studentId = me.student?._id;
-      if (!studentId) return;
-
+      setLoading(true);
       try {
-        const [sRes, attRes, feeRes, noticeRes] = await Promise.all([
+        const me = await refreshUser(api);
+        if (!me) return;
+        const studentId = me.student?._id;
+        if (!studentId) return;
+
+        const [sRes, attRes, feeRes, noticeRes, examsRes, booksRes, transportRes, hostelsRes] = await Promise.all([
           api.get(`/students/${studentId}`),
-          api.get(`/student-attendance/${studentId}`),
-          api.get(`/fees/student/${studentId}`),
-          api.get(`/notices`),
+          api.get(`/student-attendance/${studentId}`).catch(() => ({ data: [] })),
+          api.get(`/fees/student/${studentId}`).catch(() => ({ data: { fees: [] } })),
+          api.get(`/notices`).catch(() => ({ data: [] })),
+          api.get(`/exams`).catch(() => ({ data: [] })),
+          api.get(`/library`).catch(() => ({ data: [] })),
+          api.get(`/transport`).catch(() => ({ data: [] })),
+          api.get(`/hostels`).catch(() => ({ data: [] })),
         ]);
 
-        setStudent(sRes.data);
-        setAttendanceCount(attRes.data.length || 0);
+        setStudent(sRes.data || null);
+        setAttendanceCount(Array.isArray(attRes.data) ? attRes.data.length : 0);
         setFeesSummary(feeRes.data || { totalPaid: 0, fees: [] });
-        setNotices((noticeRes.data || []).slice(0, 5));
+
+        // Normalize notices: some endpoints return { notices: [...] } or array
+        const rawNotices = noticeRes.data?.notices ?? noticeRes.data ?? [];
+        setNotices(Array.isArray(rawNotices) ? rawNotices.slice(0, 6) : []);
+
+        setExams(examsRes.data || []);
+        setBooks(booksRes.data || []);
+
+        // transport/hostel may be lists — try to find assigned item for student
+        const tData = transportRes.data || [];
+        setTransport(Array.isArray(tData) ? tData.find((t) => String(t.students || []).includes(String(studentId))) ?? null : tData);
+        const hData = hostelsRes.data || [];
+        setHostel(Array.isArray(hData) ? hData.find((h) => String(h.students || []).includes(String(studentId))) ?? null : hData);
       } catch (err) {
-        console.error("Parent dashboard load failed", err.response || err);
+        console.error("Error loading dashboard data:", err);
+      } finally {
+        setLoading(false);
       }
     };
+
     load();
   }, [refreshUser]);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Parent Dashboard</h1>
+    <div className="space-y-6 p-4 md:p-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-2">
+          <User size={28} className="text-blue-600" />
+          Parent Dashboard
+        </h1>
+        <div className="text-sm text-gray-600">{student ? student.name : 'No student linked'}</div>
+      </div>
 
-      {/* Top stat cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded shadow flex items-center justify-between">
           <div>
-            <div className="text-sm text-gray-500">Due Fees</div>
-            <div className="text-xl font-bold">${feesSummary?.totalPaid || 0}</div>
+            <p className="text-xs text-gray-500">Attendance Records</p>
+            <p className="font-semibold text-xl">{attendanceCount}</p>
           </div>
-          <div className="p-3 bg-red-100 rounded-full">
-            <DollarSign className="text-red-600" />
-          </div>
+          <Calendar size={28} className="text-blue-300" />
         </div>
 
         <div className="bg-white p-4 rounded shadow flex items-center justify-between">
           <div>
-            <div className="text-sm text-gray-500">Notifications</div>
-            <div className="text-xl font-bold">{notices.length}</div>
+            <p className="text-xs text-gray-500">Total Paid</p>
+            <p className="font-semibold text-xl">${Number(feesSummary?.totalPaid || 0).toFixed(2)}</p>
           </div>
-          <div className="p-3 bg-purple-100 rounded-full">
-            <Bell className="text-purple-600" />
-          </div>
+          <DollarSign size={28} className="text-green-300" />
         </div>
 
         <div className="bg-white p-4 rounded shadow flex items-center justify-between">
           <div>
-            <div className="text-sm text-gray-500">Result</div>
-            <div className="text-xl font-bold">16</div>
+            <p className="text-xs text-gray-500">Notices</p>
+            <p className="font-semibold text-xl">{notices.length}</p>
           </div>
-          <div className="p-3 bg-amber-100 rounded-full">
-            <GraduationCap className="text-amber-600" />
-          </div>
+          <Bell size={28} className="text-purple-300" />
         </div>
 
         <div className="bg-white p-4 rounded shadow flex items-center justify-between">
           <div>
-            <div className="text-sm text-gray-500">Expenses</div>
-            <div className="text-xl font-bold">${(feesSummary?.fees || []).reduce((s, f) => s + (f.amount || 0), 0)}</div>
+            <p className="text-xs text-gray-500">Exams</p>
+            <p className="font-semibold text-xl">{exams.length}</p>
           </div>
-          <div className="p-3 bg-sky-100 rounded-full">
-            <Wallet className="text-sky-600" />
-          </div>
+          <GraduationCap size={28} className="text-yellow-300" />
         </div>
       </div>
 
-      {/* Main columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Left: main content */}
-        <div className="lg:col-span-2 space-y-4">
-
-          {/* My Kids */}
-          <div className="bg-white p-4 rounded shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">My Kids</h2>
-              <div className="text-sm text-gray-400">...</div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border rounded p-4 flex gap-4 items-center">
-                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-2xl font-semibold text-blue-700">
-                  {student?.name ? (student.name.split(' ').map(n=>n[0]).slice(0,2).join('')) : 'S'}
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">Name:</div>
-                  <div className="font-semibold">{student?.name || '-'}</div>
-                  <div className="text-sm text-gray-500">Gender: {student?.gender || '-'}</div>
-                  <div className="text-sm text-gray-500">Class: {student?.className || '-'}</div>
-                </div>
-              </div>
-
-              <div className="border rounded p-4">
-                <div className="text-sm text-gray-500">Admission Id</div>
-                <div className="font-semibold">{student?._id ? '#' + student._id.slice(-4) : '-'}</div>
-                <div className="mt-2 text-sm text-gray-500">Roll: {student?.roll || '-'}</div>
-                <div className="mt-2 text-sm text-gray-500">Section: {student?.section || '-'}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* All Expenses */}
-          <div className="bg-white p-4 rounded shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">All Expenses</h2>
-              <div className="flex items-center gap-2">
-                <input type="text" placeholder="Search..." className="border p-2 rounded text-sm" />
-                <button className="bg-yellow-500 text-white px-3 py-1 rounded text-sm">SEARCH</button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-600">
-                    <th>ID</th>
-                    <th>Expense</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>E-Mail</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(feesSummary?.fees || []).map((f, i) => (
-                    <tr key={f._id || i} className="border-t">
-                      <td className="p-2">#{(f._id||'').slice(-6)}</td>
-                      <td className="p-2">{f.type}</td>
-                      <td className="p-2">${f.amount}</td>
-                      <td className="p-2">
-                        <span className={`px-2 py-1 rounded text-white text-xs ${true ? 'bg-green-500' : 'bg-red-500'}`}>
-                          Paid
-                        </span>
-                      </td>
-                      <td className="p-2">{student?.email || '-'}</td>
-                      <td className="p-2">{f.paidOn ? new Date(f.paidOn).toLocaleDateString() : '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {!feesSummary?.fees?.length && <p className="text-gray-500 mt-3">No fee records found.</p>}
-
-          </div>
-
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="font-semibold mb-3">Recent Notices</h2>
+          {loading ? (
+            <p className="text-gray-500">Loading...</p>
+          ) : notices.length === 0 ? (
+            <p className="text-gray-500">No notices</p>
+          ) : (
+            <ul className="space-y-2">
+              {notices.map((n) => (
+                <li key={n._id} className="border rounded p-2">
+                  <div className="font-medium">{n.title || n.subject || 'Notice'}</div>
+                  <div className="text-xs text-gray-500 truncate">{n.text || n.description || ''}</div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {/* Right: notifications & exam results */}
-        <div className="space-y-4">
-
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-semibold mb-3">Notifications</h3>
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {notices.map(n => (
-                <div key={n._id} className="flex items-start gap-3">
-                  <div className="w-2 h-10 bg-indigo-100 rounded" />
-                  <div>
-                    <div className="text-sm font-semibold">{n.title}</div>
-                    <div className="text-sm text-gray-500">{n.description?.slice(0,80)}</div>
-                    <div className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleDateString()}</div>
-                  </div>
-                </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="font-semibold mb-3">Library</h2>
+          {books.length === 0 ? (
+            <p className="text-gray-500">No books issued</p>
+          ) : (
+            <ul className="space-y-2">
+              {books.slice(0,5).map((b) => (
+                <li key={b._id} className="text-sm">{b.title || b.name}</li>
               ))}
-              {!notices.length && <div className="text-gray-500">No notices</div>}
-            </div>
-          </div>
+            </ul>
+          )}
+        </div>
 
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-semibold mb-3">All Exam Results</h3>
-            <div className="text-sm text-gray-500">No results available yet — check back after exams.</div>
-          </div>
-
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="font-semibold mb-3">Transport / Hostel</h2>
+          <p className="text-sm text-gray-600">Transport: {transport ? transport.name || 'Assigned' : 'Not assigned'}</p>
+          <p className="text-sm text-gray-600 mt-2">Hostel: {hostel ? hostel.name || 'Assigned' : 'Not assigned'}</p>
         </div>
       </div>
     </div>

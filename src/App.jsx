@@ -1,75 +1,76 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
+
+const Login = lazy(() => import("./pages/Login"));
 
 /* ================= ADMIN ================= */
-import AdminLayout from "./components/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-
-/* STUDENTS */
-import AllStudents from "./pages/admin/students/AllStudents";
-import StudentDetails from "./pages/admin/students/StudentDetails";
-import AdmissionForm from "./pages/admin/students/AdmissionForm";
-import StudentPromotion from "./pages/admin/students/StudentPromotion";
-import StudentsByClass from "./pages/admin/students/StudentsByClass";
-import StudentList from "./pages/admin/students/StudentList";
-import EditStudent from "./pages/admin/students/EditStudent";
-
-/* TEACHERS (ADMIN) */
-import TeachersList from "./pages/admin/teachers/TeachersList";
-import CreateTeacher from "./pages/admin/teachers/CreateTeacher";
-import TeacherSalary from "./pages/admin/teachers/TeacherSalary";
-import TeacherNotices from "./pages/admin/teachers/TeacherNotices";
-import TeacherProfileView from "./pages/admin/teachers/TeacherProfileView";
-import EditTeacher from "./pages/admin/teachers/EditTeacher";
-
-/* PARENTS (ADMIN) */
-import ParentsList from "./pages/admin/parents/ParentsList";
-import CreateParent from "./pages/admin/parents/CreateParent";
-import ParentDetails from "./pages/admin/parents/ParentDetails";
-import EditParent from "./pages/admin/parents/EditParent";
-
+const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Students = lazy(() => import("./pages/Students"));
+const Teachers = lazy(() => import("./pages/Teachers"));
+const Parents = lazy(() => import("./pages/Parents"));
+const Classes = lazy(() => import("./pages/Classes"));
+const Subjects = lazy(() => import("./pages/Subjects"));
+const Attendance = lazy(() => import("./pages/Attendance"));
+const Fees = lazy(() => import("./pages/Fees"));
+const Exams = lazy(() => import("./pages/Exams"));
+const Timetable = lazy(() => import("./pages/Timetable"));
+const Library = lazy(() => import("./pages/Library"));
+const Transport = lazy(() => import("./pages/Transport"));
+const Hostel = lazy(() => import("./pages/Hostel"));
+const Notices = lazy(() => import("./pages/Notices"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 /* ================= TEACHER ================= */
-import TeacherLayout from "./components/teacher/TeacherLayout";
-import TeacherDashboard from "./pages/teacher/TeacherDashboard";
-import TeacherProfile from "./pages/teacher/TeacherProfile";
-import TeacherMyAttendance from "./pages/teacher/MyAttendance";
-import StudentAttendance from "./pages/teacher/StudentAttendance";
-import Notices from "./pages/teacher/Notices";
-import Documents from "./pages/teacher/Documents";
-import Homework from "./pages/teacher/Homework";
-import Salary from "./pages/teacher/Salary";
+const TeacherLayout = lazy(() => import("./components/teacher/TeacherLayout"));
+const TeacherDashboard = lazy(() => import("./pages/teacher/TeacherDashboard"));
+const TeacherProfile = lazy(() => import("./pages/teacher/TeacherProfile"));
+const TeacherMyAttendance = lazy(() => import("./pages/teacher/MyAttendance"));
+const StudentAttendance = lazy(() => import("./pages/teacher/StudentAttendance"));
+const TeacherNotices = lazy(() => import("./pages/teacher/Notices"));
+const Documents = lazy(() => import("./pages/teacher/Documents"));
+const Homework = lazy(() => import("./pages/teacher/Homework"));
+const Salary = lazy(() => import("./pages/teacher/Salary"));
 
 /* ================= STUDENT ================= */
-import StudentLayout from "./components/student/StudentLayout";
-import StudentDashboard from "./pages/student/StudentDashboard";
-import StudentNotices from "./pages/student/Notices";
-import StudentHomework from "./pages/student/Homework";
-import MyAttendance from "./pages/student/MyAttendance";
+const StudentLayout = lazy(() => import("./components/student/StudentLayout"));
+const StudentDashboard = lazy(() => import("./pages/student/StudentDashboard"));
+const StudentNotices = lazy(() => import("./pages/student/Notices"));
+const StudentHomework = lazy(() => import("./pages/student/Homework"));
+const MyAttendance = lazy(() => import("./pages/student/MyAttendance"));
 
 /* ================= PARENT ================= */
-import ParentLayout from "./components/parent/ParentLayout";
-import ParentDashboard from "./pages/parent/ParentDashboard";
-import StudentProfile from "./pages/parent/StudentProfile";
-import ParentAttendance from "./pages/parent/Attendance";
-import ParentFees from "./pages/parent/Fees";
-import ParentResults from "./pages/parent/Results";
-import ParentTimetable from "./pages/parent/Timetable";
-import ParentNotices from "./pages/parent/Notices";
-import ParentSettings from "./pages/parent/Settings";
+const ParentLayout = lazy(() => import("./components/parent/ParentLayout"));
+const ParentDashboard = lazy(() => import("./pages/parent/ParentDashboard"));
+const StudentProfile = lazy(() => import("./pages/parent/StudentProfile"));
+const ParentAttendance = lazy(() => import("./pages/parent/Attendance"));
+const ParentFees = lazy(() => import("./pages/parent/Fees"));
+const ParentResults = lazy(() => import("./pages/parent/Results"));
+const ParentTimetable = lazy(() => import("./pages/parent/Timetable"));
+const ParentNotices = lazy(() => import("./pages/parent/Notices"));
+const ParentSettings = lazy(() => import("./pages/parent/Settings"));
+
+function RouteLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-slate-600 dark:bg-slate-950 dark:text-slate-200">
+      Loading module...
+    </div>
+  );
+}
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <ToastProvider>
+        <BrowserRouter>
+          <Suspense fallback={<RouteLoader />}>
+            <Routes>
+            <Route path="/" element={<Login />} />
 
-          {/* LOGIN */}
-          <Route path="/" element={<Login />} />
-
-          {/* ================= ADMIN ================= */}
           <Route
             path="/admin"
             element={
@@ -78,36 +79,25 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<AdminDashboard />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-
-            {/* STUDENTS */}
-            <Route path="students" element={<StudentsByClass />} />
-            <Route path="students/all" element={<AllStudents />} />
-            <Route path="students/details" element={<StudentDetails />} />
-            <Route path="students/admission" element={<AdmissionForm />} />
-            <Route path="students/promotion" element={<StudentPromotion />} />
-            <Route path="students/class/:className" element={<StudentList />} />
-            <Route path="students/edit/:id" element={<EditStudent />} />
-            <Route path="students/:id" element={<StudentDetails />} />
-
-            {/* TEACHERS */}
-            <Route path="teachers" element={<TeachersList />} />
-            <Route path="teachers/create" element={<CreateTeacher />} />
-            <Route path="teachers/:id/salary" element={<TeacherSalary />} />
-            <Route path="teachers/:id/notices" element={<TeacherNotices />} />
-            <Route path="teachers/edit/:id" element={<EditTeacher />} />
-            <Route path="teachers/:id/profile" element={<TeacherProfileView />} />
-
-            {/* PARENTS */}
-            <Route path="parents" element={<ParentsList />} />
-            <Route path="parents/create" element={<CreateParent />} />
-            <Route path="parents/edit/:id" element={<EditParent />} />
-            <Route path="parents/:id" element={<ParentDetails />} />
-
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="students" element={<Students />} />
+            <Route path="teachers" element={<Teachers />} />
+            <Route path="parents" element={<Parents />} />
+            <Route path="classes" element={<Classes />} />
+            <Route path="subjects" element={<Subjects />} />
+            <Route path="attendance" element={<Attendance />} />
+            <Route path="fees" element={<Fees />} />
+            <Route path="exams" element={<Exams />} />
+            <Route path="timetable" element={<Timetable />} />
+            <Route path="library" element={<Library />} />
+            <Route path="transport" element={<Transport />} />
+            <Route path="hostel" element={<Hostel />} />
+            <Route path="notices" element={<Notices />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
-          {/* ================= TEACHER ================= */}
           <Route
             path="/teacher"
             element={
@@ -121,13 +111,12 @@ function App() {
             <Route path="profile" element={<TeacherProfile />} />
             <Route path="my-attendance" element={<TeacherMyAttendance />} />
             <Route path="student-attendance" element={<StudentAttendance />} />
-            <Route path="notices" element={<Notices />} />
+            <Route path="notices" element={<TeacherNotices />} />
             <Route path="documents" element={<Documents />} />
             <Route path="homework" element={<Homework />} />
             <Route path="salary" element={<Salary />} />
           </Route>
 
-          {/* ================= STUDENT ================= */}
           <Route
             path="/student"
             element={
@@ -143,7 +132,6 @@ function App() {
             <Route path="homework" element={<StudentHomework />} />
           </Route>
 
-          {/* ================= PARENT ================= */}
           <Route
             path="/parent"
             element={
@@ -161,10 +149,11 @@ function App() {
             <Route path="timetable" element={<ParentTimetable />} />
             <Route path="notices" element={<ParentNotices />} />
             <Route path="settings" element={<ParentSettings />} />
-          </Route>
-
-        </Routes>
-      </BrowserRouter>
+            </Route>
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

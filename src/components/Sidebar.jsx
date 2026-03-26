@@ -1,179 +1,113 @@
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
 import {
   LayoutDashboard,
   Users,
-  User,
-  Book,
-  ClipboardList,
+  GraduationCap,
+  UserRound,
+  School,
+  BookOpen,
+  ClipboardCheck,
+  Wallet,
+  FileCheck2,
+  CalendarDays,
+  Library,
   Bus,
-  Hotel,
-  Bell,
-  ChevronDown,
+  Building2,
+  Megaphone,
+  BarChart3,
+  Settings,
+  ChevronLeft,
   ChevronRight,
-  PlusCircle,
-  IndianRupee,
-  FileText,
-  Edit,
 } from "lucide-react";
+import usePermissions from "../hooks/usePermissions";
 
-export default function Sidebar({ onClose }) {
-  const [openStudents, setOpenStudents] = useState(false);
-  const [openTeachers, setOpenTeachers] = useState(false);
-  const [openParents, setOpenParents] = useState(false);
+const menuItems = [
+  { label: "Dashboard", icon: LayoutDashboard, to: "/admin/dashboard", resource: "dashboard" },
+  { label: "Students", icon: Users, to: "/admin/students", resource: "students" },
+  { label: "Teachers", icon: GraduationCap, to: "/admin/teachers", resource: "teachers" },
+  { label: "Parents", icon: UserRound, to: "/admin/parents", resource: "parents" },
+  { label: "Classes", icon: School, to: "/admin/classes", resource: "classes" },
+  { label: "Subjects", icon: BookOpen, to: "/admin/subjects", resource: "subjects" },
+  { label: "Attendance", icon: ClipboardCheck, to: "/admin/attendance", resource: "attendance" },
+  { label: "Fees", icon: Wallet, to: "/admin/fees", resource: "fees" },
+  { label: "Exams", icon: FileCheck2, to: "/admin/exams", resource: "exams" },
+  { label: "Timetable", icon: CalendarDays, to: "/admin/timetable", resource: "timetable" },
+  { label: "Library", icon: Library, to: "/admin/library", resource: "library" },
+  { label: "Transport", icon: Bus, to: "/admin/transport", resource: "transport" },
+  { label: "Hostel", icon: Building2, to: "/admin/hostel", resource: "hostel" },
+  { label: "Notices", icon: Megaphone, to: "/admin/notices", resource: "notices" },
+  { label: "Reports", icon: BarChart3, to: "/admin/reports", resource: "reports" },
+  { label: "Settings", icon: Settings, to: "/admin/settings", resource: "settings" },
+];
 
-  const link =
-    "flex items-center gap-3 px-4 py-2 rounded text-sm text-gray-200 hover:bg-blue-800";
+export default function Sidebar({ isOpen, collapsed, onClose, onToggleCollapse }) {
+  const { can } = usePermissions();
+  const shellWidth = collapsed ? "md:w-20" : "md:w-64";
+  const visibleItems = menuItems.filter((item) => can(item.resource, "view"));
 
-  const active = "bg-blue-900 text-white font-medium";
+  const linkClass = ({ isActive }) => {
+    const base = "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200";
+    const state = isActive
+      ? "bg-sky-500/20 text-sky-100 shadow-inner"
+      : "text-slate-300 hover:bg-slate-800 hover:text-slate-50";
+    return base + " " + state;
+  };
 
-  const subLink =
-    "flex items-center gap-2 pl-12 pr-4 py-2 text-sm text-gray-300 hover:bg-blue-800";
+  const asideClass = [
+    "fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full transform border-r border-slate-800 bg-slate-900 transition-all duration-300 md:translate-x-0",
+    isOpen ? "translate-x-0" : "",
+    shellWidth,
+  ].join(" ");
 
   return (
-    <div className="h-full bg-[#0B1E3A] text-white flex flex-col">
+    <aside className={asideClass}>
+      <div className="flex h-full flex-col">
+        <div className="flex items-center justify-between border-b border-slate-800 px-4 py-4">
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-semibold tracking-wide text-white">
+              {collapsed ? "ERP" : "School ERP"}
+            </h2>
+            {!collapsed && <p className="text-xs text-slate-400">Admin Console</p>}
+          </div>
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="hidden rounded-lg border border-slate-700 p-1.5 text-slate-300 transition hover:border-slate-500 hover:text-white md:inline-flex"
+            aria-label="Toggle sidebar"
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        </div>
 
-      {/* LOGO */}
-      <div className="px-4 py-4 border-b border-blue-900">
-        <h2 className="text-xl font-bold">AKKHOR</h2>
-        <p className="text-xs text-gray-400">School Admin</p>
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+          {visibleItems.map((item) => {
+            const Icon = item.icon;
+            if (item.to) {
+              return (
+                <NavLink key={item.label} to={item.to} onClick={onClose} className={linkClass}>
+                  <Icon size={18} className="shrink-0" />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                </NavLink>
+              );
+            }
+
+            return (
+              <button
+                key={item.label}
+                type="button"
+                className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-200"
+              >
+                <Icon size={18} className="shrink-0" />
+                {!collapsed && <span className="truncate">{item.label}</span>}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-slate-800 px-4 py-3 text-xs text-slate-400">
+          {collapsed ? "v2.6" : "School ERP v2.6"}
+        </div>
       </div>
-
-      {/* MENU */}
-      <nav className="flex-1 overflow-y-auto py-3 space-y-1">
-
-        {/* DASHBOARD */}
-        <NavLink
-          to="/admin/dashboard"
-          onClick={onClose}
-          className={({ isActive }) => `${link} ${isActive && active}`}
-        >
-          <LayoutDashboard size={16} /> Dashboard
-        </NavLink>
-
-        {/* ================= STUDENTS ================= */}
-        <button
-          onClick={() => setOpenStudents(!openStudents)}
-          className={`${link} w-full justify-between`}
-        >
-          <span className="flex items-center gap-3">
-            <Users size={16} /> Students
-          </span>
-          {openStudents ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-        </button>
-
-        {openStudents && (
-          <div className="space-y-1">
-            <NavLink to="/admin/students" className={subLink}>All Students</NavLink>
-            <NavLink to="/admin/students/details" className={subLink}>Student Details</NavLink>
-            <NavLink to="/admin/students/admission" className={subLink}>Admission Form</NavLink>
-            <NavLink to="/admin/students/promotion" className={subLink}>Student Promotion</NavLink>
-          </div>
-        )}
-
-        {/* ================= TEACHERS ================= */}
-        <button
-          onClick={() => setOpenTeachers(!openTeachers)}
-          className={`${link} w-full justify-between`}
-        >
-          <span className="flex items-center gap-3">
-            <User size={16} /> Teachers
-          </span>
-          {openTeachers ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-        </button>
-
-        {openTeachers && (
-          <div className="space-y-1">
-
-            <NavLink to="/admin/teachers" className={subLink}>
-              <Users size={14} /> All Teachers
-            </NavLink>
-
-            <NavLink to="/admin/teachers/create" className={subLink}>
-              <PlusCircle size={14} /> Create Teacher
-            </NavLink>
-            <NavLink to="/admin/teachers/1/profile" className={subLink}>
-              <User size={14} /> Teacher Profile
-            </NavLink>
-
-
-            <NavLink to="/admin/teachers/edit/1" className={subLink}>
-              <Edit size={14} /> Edit Teacher
-            </NavLink>
-
-             
-
-            <NavLink to="/admin/teachers/1/salary" className={subLink}>
-              <IndianRupee size={14} /> Teacher Salary
-            </NavLink>
-
-            <NavLink to="/admin/teachers/1/notices" className={subLink}>
-              <FileText size={14} /> Teacher Notices
-            </NavLink>
-
-          </div>
-        )}
-
-        {/* ================= PARENTS ================= */}
-        <button
-          onClick={() => setOpenParents(!openParents)}
-          className={`${link} w-full justify-between`}
-        >
-          <span className="flex items-center gap-3">
-            <User size={16} /> Parents
-          </span>
-          {openParents ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-        </button>
-
-        {openParents && (
-          <div className="space-y-1">
-            <NavLink to="/admin/parents" className={subLink}>
-              <Users size={14} /> All Parents
-            </NavLink>
-
-            <NavLink to="/admin/parents/create" className={subLink}>
-              <PlusCircle size={14} /> Create Parent
-            </NavLink>
-          </div>
-        )}
-
-        {/* ================= OTHER MODULES ================= */}
-        <NavLink
-          to="/admin/library"
-          className={({ isActive }) => `${link} ${isActive && active}`}
-        >
-          <Book size={16} /> Library
-        </NavLink>
-
-        <NavLink
-          to="/admin/exam"
-          className={({ isActive }) => `${link} ${isActive && active}`}
-        >
-          <ClipboardList size={16} /> Exam
-        </NavLink>
-
-        <NavLink
-          to="/admin/transport"
-          className={({ isActive }) => `${link} ${isActive && active}`}
-        >
-          <Bus size={16} /> Transport
-        </NavLink>
-
-        <NavLink
-          to="/admin/hostel"
-          className={({ isActive }) => `${link} ${isActive && active}`}
-        >
-          <Hotel size={16} /> Hostel
-        </NavLink>
-
-        <NavLink
-          to="/admin/notice"
-          className={({ isActive }) => `${link} ${isActive && active}`}
-        >
-          <Bell size={16} /> Notice
-        </NavLink>
-
-      </nav>
-    </div>
+    </aside>
   );
 }
