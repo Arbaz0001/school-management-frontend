@@ -4,8 +4,9 @@ import api from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { email: userId, password });
       login(res.data);
       navigate(`/${res.data.user.role}/dashboard`);
     } catch (err) {
@@ -26,89 +27,120 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 px-4">
+    <div className="min-h-screen bg-slate-100">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
 
-      {/* MAIN CARD */}
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeIn">
+        <section className="relative overflow-hidden bg-[#2f4ea2] px-8 py-12 text-white sm:px-12 lg:px-16 lg:py-16">
+          <div className="mx-auto flex h-full w-full max-w-xl flex-col justify-between">
+            <p className="text-xl font-semibold tracking-wide sm:text-2xl">SCHOOLERP</p>
 
-        {/* LEFT PANEL */}
-        <div className="hidden md:flex flex-col justify-center p-12 bg-gradient-to-br from-blue-700 to-indigo-800 text-white">
-          <h1 className="text-4xl font-extrabold mb-4">
-            School ERP System
-          </h1>
-          <p className="text-blue-100 text-lg leading-relaxed">
-            A complete school management solution for <br />
-            <span className="font-semibold">
-              Admin, Teacher, Student & Parent
-            </span>
-          </p>
+            <div className="my-10 rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-sm sm:p-10">
+              <div className="mx-auto mb-8 h-44 w-full max-w-xs rounded-2xl border border-white/30 bg-[#365ab7] p-4 shadow-xl">
+                <svg viewBox="0 0 280 140" className="h-full w-full" aria-hidden="true">
+                  <rect x="28" y="88" width="224" height="12" rx="4" fill="#7088cc" />
+                  <rect x="44" y="98" width="14" height="30" fill="#7088cc" />
+                  <rect x="222" y="98" width="14" height="30" fill="#7088cc" />
+                  <rect x="92" y="22" width="96" height="58" rx="10" fill="#d9e2ff" />
+                  <circle cx="140" cy="51" r="15" fill="#4a5a90" />
+                  <polygon points="134,43 146,51 134,59" fill="#f8fafc" />
+                  <circle cx="196" cy="52" r="14" fill="#efb4c1" />
+                  <rect x="186" y="64" width="22" height="24" rx="6" fill="#8a6f88" />
+                </svg>
+              </div>
 
-          <div className="mt-8 space-y-3 text-sm text-blue-200">
-            <p>✔ Secure role-based login</p>
-            <p>✔ Attendance & academic tracking</p>
-            <p>✔ Centralized school data</p>
+              <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
+                A few more clicks to sign in to your account.
+              </h1>
+            </div>
           </div>
-        </div>
 
-        {/* RIGHT PANEL */}
-        <div className="p-8 sm:p-12 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            Welcome Back 👋
-          </h2>
-          <p className="text-gray-500 mb-8">
-            Login to continue to your dashboard
-          </p>
+          <div className="pointer-events-none absolute -right-20 top-0 hidden h-full w-40 rounded-l-[120px] bg-slate-100/90 lg:block" />
+        </section>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <section className="flex items-center justify-center bg-slate-100 px-5 py-10 sm:px-10">
+          <div className="w-full max-w-md rounded-3xl bg-white p-7 shadow-[0_20px_60px_rgba(15,23,42,0.14)] sm:p-10">
+            <h2 className="text-center text-3xl font-bold leading-tight text-slate-800 sm:text-4xl">
+              Samaritans English Medium Sr. Sec. School
+            </h2>
+            <p className="mt-3 text-center text-lg font-semibold text-slate-700">
+              Parents &amp; Students Sign In
+            </p>
 
-            {/* EMAIL */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="admin@gmail.com"
-                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              <div>
+                <label htmlFor="user-id" className="mb-2 block text-sm font-medium text-slate-600">
+                  User ID
+                </label>
+                <input
+                  id="user-id"
+                  type="text"
+                  placeholder="User ID"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  required
+                />
+              </div>
 
-            {/* PASSWORD */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+              <div>
+                <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-600">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
 
-            {/* BUTTON */}
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-3 rounded-lg text-white font-semibold transition-all duration-300
-                ${loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg"
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <label className="inline-flex items-center gap-2 text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-700 focus:ring-blue-500"
+                  />
+                  Remember me
+                </label>
+
+                <button
+                  type="button"
+                  className="font-medium text-slate-600 transition hover:text-blue-700"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full rounded-xl py-3.5 text-base font-semibold text-white transition duration-200 ${
+                  loading
+                    ? "cursor-not-allowed bg-slate-400"
+                    : "bg-blue-700 shadow-md shadow-blue-700/20 hover:-translate-y-0.5 hover:bg-blue-800"
                 }`}
-            >
-              {loading ? "Signing in..." : "Login"}
-            </button>
-          </form>
+              >
+                {loading ? "Signing In..." : "Login"}
+              </button>
+            </form>
 
-          <p className="text-xs text-gray-400 mt-6 text-center">
-            Accounts are created by Admin only. No self-registration allowed.
-          </p>
-        </div>
+            <p className="mt-8 text-sm leading-relaxed text-slate-600">
+              By signing up, you agree to our {" "}
+              <button type="button" className="font-medium text-blue-700 transition hover:text-blue-800">
+                Terms and Conditions
+              </button>
+              {" "}&amp;{" "}
+              <button type="button" className="font-medium text-blue-700 transition hover:text-blue-800">
+                Privacy Policy
+              </button>
+            </p>
+          </div>
+        </section>
       </div>
     </div>
   );
