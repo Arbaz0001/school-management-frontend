@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import API_BASE_URL from "../../config/api";
 
 export default function Documents() {
   const [docs, setDocs] = useState([]);
@@ -62,7 +63,7 @@ export default function Documents() {
                 <div className="font-medium">{d.title}</div>
                 <div className="text-sm text-gray-500">{d.description}</div>
               </div>
-              <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${d.file}`} target="_blank" rel="noreferrer">Download</a>
+              <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${d.file}`} target="_blank" rel="noreferrer">Download</a>
             </li>
           ))}
         </ul>

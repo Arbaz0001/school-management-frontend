@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import API_BASE_URL from "../../config/api";
 
 export default function Notices() {
   const [notices, setNotices] = useState([]);
@@ -31,7 +32,7 @@ export default function Notices() {
               <p className="text-sm text-gray-600 mb-2">Sent by: {n.sentBy?.name || "Admin"} on {new Date(n.createdAt).toLocaleString()}</p>
               <p className="mb-2">{n.text}</p>
               {n.file && (
-                <a className="text-blue-600 text-sm" href={`http://localhost:5000/uploads/notices/${n.file}`} target="_blank" rel="noreferrer">Download attachment</a>
+                <a className="text-blue-600 text-sm" href={`${API_BASE_URL}/uploads/notices/${n.file}`} target="_blank" rel="noreferrer">Download attachment</a>
               )}
             </div>
           ))}

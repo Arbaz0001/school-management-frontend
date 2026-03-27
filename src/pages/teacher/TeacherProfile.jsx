@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import API_BASE_URL from "../../config/api";
 
 export default function TeacherProfile() {
   const [teacher, setTeacher] = useState(null);
@@ -130,7 +131,7 @@ export default function TeacherProfile() {
               <div>
                 <p className="text-sm text-gray-500">Resume</p>
                 {teacher.documents?.resume ? (
-                  <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${teacher.documents.resume}`} target="_blank" rel="noreferrer">Download</a>
+                  <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${teacher.documents.resume}`} target="_blank" rel="noreferrer">Download</a>
                 ) : (
                   <span className="text-gray-500">Not uploaded</span>
                 )}
@@ -139,7 +140,7 @@ export default function TeacherProfile() {
               <div>
                 <p className="text-sm text-gray-500">Qualification Certificate</p>
                 {teacher.documents?.qualificationCert ? (
-                  <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${teacher.documents.qualificationCert}`} target="_blank" rel="noreferrer">Download</a>
+                  <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${teacher.documents.qualificationCert}`} target="_blank" rel="noreferrer">Download</a>
                 ) : (
                   <span className="text-gray-500">Not uploaded</span>
                 )}
@@ -148,7 +149,7 @@ export default function TeacherProfile() {
               <div>
                 <p className="text-sm text-gray-500">Aadhaar / ID</p>
                 {teacher.documents?.aadhaar ? (
-                  <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${teacher.documents.aadhaar}`} target="_blank" rel="noreferrer">Download</a>
+                  <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${teacher.documents.aadhaar}`} target="_blank" rel="noreferrer">Download</a>
                 ) : (
                   <span className="text-gray-500">Not uploaded</span>
                 )}

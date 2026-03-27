@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../../config/api";
 
-const API = "http://localhost:5000";
+const API = API_BASE_URL;
 
 export default function StudentDetails() {
   const { id } = useParams();

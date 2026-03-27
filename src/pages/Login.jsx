@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import axios from "axios";
+import API_BASE_URL from "../config/api";
 import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
@@ -15,7 +16,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
       login(res.data);
       navigate(`/${res.data.user.role}/dashboard`);
     } catch (err) {

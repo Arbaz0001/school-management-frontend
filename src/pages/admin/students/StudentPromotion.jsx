@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../../config/api";
 
 const CLASS_ORDER = [
   "Nursery",
@@ -39,12 +40,12 @@ export default function StudentPromotion() {
   useEffect(() => {
     // fetch sessions and class counts
     axios
-      .get("http://localhost:5000/api/sessions")
+      .get(`${API_BASE_URL}/api/sessions`)
       .then((res) => setSessions(res.data))
       .catch(() => {});
 
     axios
-      .get("http://localhost:5000/api/students/class-count")
+      .get(`${API_BASE_URL}/api/students/class-count`)
       .then((res) => setClassCounts(res.data.map(c => c._id)))
       .catch(() => {});
   }, []);
@@ -73,7 +74,7 @@ export default function StudentPromotion() {
     setMessage("");
     setError("");
     try {
-      const res = await axios.get("http://localhost:5000/api/students", { params: { className: fromClass, session: fromSession } });
+      const res = await axios.get(`${API_BASE_URL}/api/students`, { params: { className: fromClass, session: fromSession } });
       setStudents(res.data.students || res.data);
       setSelectedIds(new Set());
       setSelectAll(false);
@@ -116,7 +117,7 @@ export default function StudentPromotion() {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/students/promote",
+        `${API_BASE_URL}/api/students/promote`,
         {
           mode: "selectedStudents",
           studentIds: Array.from(selectedIds),
@@ -150,7 +151,7 @@ export default function StudentPromotion() {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/students/promote",
+        `${API_BASE_URL}/api/students/promote`,
         {
           mode: "bulkClass",
           className: fromClass,

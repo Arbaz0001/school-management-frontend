@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import API_BASE_URL from "../../config/api";
 
 export default function Homework() {
   const [homeworks, setHomeworks] = useState([]);
@@ -105,7 +106,7 @@ export default function Homework() {
                   <div className="font-semibold">{h.title}</div>
                   <div className="text-sm text-gray-500">Classes: {h.classes?.join(', ')}</div>
                 </div>
-                {h.file && <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${h.file}`} target="_blank" rel="noreferrer">Download</a>}
+                {h.file && <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${h.file}`} target="_blank" rel="noreferrer">Download</a>}
               </div>
               <p className="mt-2 text-sm text-gray-700">{h.description}</p>
               {h.dueDate && <p className="text-sm text-gray-500 mt-2">Due: {new Date(h.dueDate).toLocaleDateString()}</p>}
@@ -126,7 +127,7 @@ export default function Homework() {
                             <div className="text-sm text-gray-600">Submitted: {s.submittedAt ? new Date(s.submittedAt).toLocaleString() : '—'}</div>
                           </div>
                           <div>
-                            {s.file && <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${s.file}`} target="_blank" rel="noreferrer">Download</a>}
+                            {s.file && <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${s.file}`} target="_blank" rel="noreferrer">Download</a>}
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-700">{s.note}</div>

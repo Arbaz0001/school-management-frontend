@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import API_BASE_URL from "../../config/api";
 
 export default function StudentHomework() {
   const [homeworks, setHomeworks] = useState([]);
@@ -78,7 +79,7 @@ export default function StudentHomework() {
                   <div className="text-sm text-gray-500">Posted: {new Date(h.createdAt).toLocaleDateString()}</div>
                 </div>
                 <div className="space-x-3 flex items-center">
-                  {h.file && <a className="text-blue-600" href={`http://localhost:5000/uploads/docs/${h.file}`} target="_blank" rel="noreferrer">Download</a>}
+                  {h.file && <a className="text-blue-600" href={`${API_BASE_URL}/uploads/docs/${h.file}`} target="_blank" rel="noreferrer">Download</a>}
                   <button className="text-sm text-white bg-blue-600 px-3 py-1 rounded" onClick={() => handleToggle(h._id)}>{openForm === h._id ? 'Close' : 'Submit'}</button>
                 </div>
               </div>
@@ -88,7 +89,7 @@ export default function StudentHomework() {
               {openForm === h._id && (
                 <div className="mt-3 border-t pt-3">
                   {submissions[h._id] ? (
-                    <div className="text-sm text-green-700">You submitted on {new Date(submissions[h._id].submittedAt).toLocaleString()}. {submissions[h._id].file && <a className="text-blue-600 ml-2" href={`http://localhost:5000/uploads/docs/${submissions[h._id].file}`} target="_blank" rel="noreferrer">View</a>}</div>
+                    <div className="text-sm text-green-700">You submitted on {new Date(submissions[h._id].submittedAt).toLocaleString()}. {submissions[h._id].file && <a className="text-blue-600 ml-2" href={`${API_BASE_URL}/uploads/docs/${submissions[h._id].file}`} target="_blank" rel="noreferrer">View</a>}</div>
                   ) : (
                     <form onSubmit={(e) => handleSubmit(e, h._id)} className="space-y-2">
                       <div>

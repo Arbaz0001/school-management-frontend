@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import API_BASE_URL from "../../config/api";
 
 export default function StudentNotices() {
   const [notices, setNotices] = useState([]);
@@ -52,7 +53,7 @@ export default function StudentNotices() {
                   <div className="text-sm text-gray-500">{n.sentBy?.name || 'Admin'} • {new Date(n.createdAt).toLocaleString()}</div>
                 </div>
                 <div className="space-x-3 flex items-center">
-                  {n.file && <a className="text-blue-600" href={`http://localhost:5000/uploads/notices/${n.file}`} target="_blank" rel="noreferrer">Download</a>}
+                  {n.file && <a className="text-blue-600" href={`${API_BASE_URL}/uploads/notices/${n.file}`} target="_blank" rel="noreferrer">Download</a>}
                   {!n.isReadByMe && <button onClick={() => markRead(n._id)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded">Mark read</button>}
                 </div>
               </div>
