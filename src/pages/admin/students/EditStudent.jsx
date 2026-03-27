@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
-import API_BASE_URL from "../../../config/api";
 
 export default function EditStudent() {
   const { id } = useParams();
@@ -9,12 +8,12 @@ export default function EditStudent() {
   const [form, setForm] = useState({});
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/students/${id}`)
+    api.get(`/students/${id}`)
       .then(res => setForm(res.data));
   }, []);
 
   const save = async () => {
-    await axios.put(`${API_BASE_URL}/api/students/${id}`, form);
+    await api.put(`/students/${id}`, form);
     alert("Updated");
     navigate(-1);
   };

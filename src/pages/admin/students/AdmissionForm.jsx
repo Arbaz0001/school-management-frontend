@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../services/api";
 import BulkAdmissionModal from "./BulkAdmissionModal";
-import API_BASE_URL from "../../../config/api";
 
 export default function AdmissionForm() {
   const [openBulk, setOpenBulk] = useState(false);
@@ -53,7 +52,7 @@ export default function AdmissionForm() {
 
   /* 🔥 FETCH SESSIONS FROM BACKEND */
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/sessions`)
+    api.get("/sessions")
       .then(res => setSessions(res.data))
       .catch(err => console.error("Session load error", err));
   }, []);
@@ -81,7 +80,7 @@ export default function AdmissionForm() {
       const data = new FormData();
       Object.entries(formData).forEach(([k, v]) => data.append(k, v ?? ""));
 
-      await axios.post(`${API_BASE_URL}/api/students`, data, {
+      await api.post("/students", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

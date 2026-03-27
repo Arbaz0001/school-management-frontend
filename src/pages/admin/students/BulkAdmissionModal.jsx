@@ -1,6 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
-import API_BASE_URL from "../../../config/api";
+import api from "../../../services/api";
 
 export default function BulkAdmissionModal({ onClose }) {
   const [file, setFile] = useState(null);
@@ -17,7 +16,7 @@ export default function BulkAdmissionModal({ onClose }) {
       const data = new FormData();
       data.append("file", file);
 
-      await axios.post(`${API_BASE_URL}/api/students/bulk`, data, {
+      await api.post("/students/bulk", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

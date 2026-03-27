@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from "../../../config/api";
 
 export default function StudentsByClass() {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/api/students/class-count`)
+    api
+      .get("/students/class-count")
       .then((res) => setData(res.data));
   }, []);
 

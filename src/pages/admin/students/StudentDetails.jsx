@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/api";
 
@@ -11,17 +11,15 @@ export default function StudentDetails() {
   const [s, setStudent] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${API}/api/students/${id}`)
+    api
+      .get(`/students/${id}`)
       .then((res) => setStudent(res.data))
       .catch((err) => console.error("Student details error", err));
   }, [id]);
 
   if (!s) return <p className="p-6">Loading student details...</p>;
 
-  const photoUrl = s.photo
-    ? `${API}/uploads/photos/${s.photo}`
-    : "https://via.placeholder.com/150";
+  const photoUrl = s.photo ? `${API}/uploads/photos/${s.photo}` : "";
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -29,11 +27,17 @@ export default function StudentDetails() {
       {/* HEADER CARD */}
       <div className="bg-white shadow rounded p-6 flex justify-between items-center mb-6">
         <div className="flex gap-6 items-center">
-          <img
-            src={photoUrl}
-            alt="student"
-            className="w-32 h-32 rounded object-cover border"
-          />
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt="student"
+              className="w-32 h-32 rounded object-cover border"
+            />
+          ) : (
+            <div className="w-32 h-32 rounded border bg-slate-100 flex items-center justify-center text-slate-500 text-sm">
+              No photo
+            </div>
+          )}
 
           <div>
             <h1 className="text-2xl font-semibold">

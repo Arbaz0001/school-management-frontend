@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/api";
 
-const API = `${API_BASE_URL}/api/students`;
+const API = "/students";
 
 export default function StudentList() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function StudentList() {
     try {
       setLoading(true);
 
-      const res = await axios.get(API, {
+      const res = await api.get(API, {
         params: {
           search: search || undefined,
           session: session || undefined,
@@ -56,7 +56,7 @@ export default function StudentList() {
   /* DELETE */
   const deleteStudent = async (id) => {
     if (!window.confirm("Delete this student?")) return;
-    await axios.delete(`${API}/${id}`);
+    await api.delete(`${API}/${id}`);
     fetchStudents();
   };
 
@@ -67,7 +67,7 @@ export default function StudentList() {
       return;
     }
     window.open(
-      `${API}/download/${className}?session=${session}`,
+      `${API_BASE_URL}/api/students/download/${className}?session=${session}`,
       "_blank"
     );
   };
